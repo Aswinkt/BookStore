@@ -1,18 +1,18 @@
 from rest_framework import generics, permissions, status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from base.models import User, Author, Book
 from .serializers import UserSerializer, LoginSerializer, AuthorSerializer, BookSerializer
 from base.messages import MESSAGES
 import logging
-from rest_framework import serializers
-from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
 class RegisterView(generics.CreateAPIView):
+    """API for user registration"""
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -52,6 +52,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(generics.GenericAPIView):
+    """API for user login"""
     serializer_class = LoginSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -101,6 +102,7 @@ class LoginView(generics.GenericAPIView):
 
 
 class BookListCreateView(generics.ListCreateAPIView):
+    """API for adding books"""
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -153,6 +155,7 @@ class BookListCreateView(generics.ListCreateAPIView):
 
 
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """API for single book details, update and delete"""
     lookup_field = 'object_id'
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -184,6 +187,7 @@ class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AuthorBooksView(generics.ListAPIView):
+    """API for listing all books by author"""
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -193,6 +197,7 @@ class AuthorBooksView(generics.ListAPIView):
 
 
 class UserListView(generics.ListAPIView):
+    """API for listing all users"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -209,6 +214,7 @@ class UserListView(generics.ListAPIView):
 
 
 class AuthorListView(generics.ListAPIView):
+    """API for listing all authors"""
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
