@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: bookstore_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: Admin@100
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: gunicorn bookstore.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://dev_user:Admin@100@db:5432/bookstore_dev
+
+volumes:
+  postgres_data:
