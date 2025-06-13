@@ -8,6 +8,7 @@ from .serializers import UserSerializer, LoginSerializer, AuthorSerializer, Book
 from base.messages import MESSAGES
 import logging
 from rest_framework import serializers
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +190,35 @@ class AuthorBooksView(generics.ListAPIView):
     def get_queryset(self):
         object_id = self.kwargs.get('object_id')
         return Book.objects.filter(author__object_id=object_id)
+
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(is_author=False)
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(email__icontains=search) |
+                Q(full_name__icontains=search)
+            )
+        return queryset
+
+
+class AuthorListView(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Author.objects.all()
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(user__email__icontains=search) |
+                Q(user__full_name__icontains=search)
+            )
+        return queryset
