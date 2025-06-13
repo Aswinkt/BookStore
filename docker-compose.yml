@@ -14,7 +14,7 @@ services:
 
   web:
     build: .
-    command: gunicorn bookstore.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn BookStore.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
